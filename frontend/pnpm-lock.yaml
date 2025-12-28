@@ -32,7 +32,7 @@ dependencies:
   ethers:
     specifier: ^6.11.0
     version: 6.11.0
-  fhenixjs:
+  luxfhejs:
     specifier: ^0.1.0-beta.5
     version: 0.1.0-beta.5
   mitt:
@@ -4018,7 +4018,7 @@ packages:
       reusify: 1.0.4
     dev: false
 
-  /fhenixjs@0.1.0-beta.5:
+  /luxfhejs@0.1.0-beta.5:
     resolution: {integrity: sha512-Bp++KetxeckF+dOwCQwsN76JeYJ+2nZuV2n+AAdQrE+N0C/FlEFx45Y4omlKEea1F6ASWmPfA4CHVPUgkAIRRg==}
     dependencies:
       ethers: 6.11.0

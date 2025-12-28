@@ -1,8 +1,8 @@
 import { ref } from "vue";
 import { ethers } from "ethers";
 
-import type { SupportedProvider } from "fhenixjs";
-import { FhenixClient, generatePermit, getPermit, getAllPermits } from "fhenixjs";
+import type { SupportedProvider } from "luxfhejs";
+import { LuxFHEClient, generatePermit, getPermit, getAllPermits } from "luxfhejs";
 
 import AuctionArtifact from "~/contracts/Auction.json";
 import ExampleToken from "~/contracts/FHERC20.json";
@@ -34,12 +34,12 @@ const config = useRuntimeConfig();
 const ERROR_CHAIN_DOES_NOT_EXIST = 4902;
 
 let provider = null as ExtendedProvider | ethers.BrowserProvider | null;
-const fheClient = ref<FhenixClient | null>(null);
+const fheClient = ref<LuxFHEClient | null>(null);
 const fnxChainId = config.public.NETWORK_CHAIN_ID;
 const networkRPC = config.public.NETWORK_RPC_URL;
 const explorerURL = config.public.NETWORK_EXPLORER_URL;
 const mmChainId = ref<number>(-1);
-const isItFhenixNetwork = ref<boolean>(false);
+const isItLuxFHENetwork = ref<boolean>(false);
 const eventWasAdded = ref<boolean>(false);
 const balance = ref<string>("");
 const address = ref<string>("");
@@ -47,7 +47,7 @@ const tokenAddress = ref<string>(TokenContractDeployment.address);
 
 export default function useChain() {
   return {
-    isItFhenixNetwork,
+    isItLuxFHENetwork,
     balance,
     address,
     tokenAddress,
@@ -76,7 +76,7 @@ function getProvider() {
 }
 
 function initFHEClient() {
-  fheClient.value = new FhenixClient({ provider: provider as SupportedProvider });
+  fheClient.value = new LuxFHEClient({ provider: provider as SupportedProvider });
 }
 
 function getFheClient() {
@@ -274,7 +274,7 @@ async function fnxConnect() {
     console.log("chainId", Number(chainId));
     console.log("fnxChainId", Number(fnxChainId));
     if (Number(chainId) !== Number(fnxChainId)) {
-      await addFhenixChain();
+      await addLuxFHEChain();
     }
 
     mmChainId.value = Number(chainId);
@@ -291,13 +291,13 @@ async function fnxConnect() {
   }
 }
 
-async function addFhenixChain() {
+async function addLuxFHEChain() {
   try {
     if (provider !== null) {
       const chainData = [
         {
           chainId: "0x" + Number(fnxChainId).toString(16),
-          chainName: "Fhenix Network - Hardhat",
+          chainName: "LuxFHE Network - Hardhat",
           nativeCurrency: { name: "FHE Token", symbol: "FHE", decimals: 18 },
           rpcUrls: [networkRPC],
           blockExplorerUrls: [explorerURL],
@@ -319,14 +319,14 @@ async function switchEthereumChain(chainId: number) {
 
     await provider.send("wallet_switchEthereumChain", [{ chainId: "0x" + chainId.toString(16) }]);
     console.log("Switched to network:", chainId);
-    isItFhenixNetwork.value = Number(chainId) === Number(fnxChainId);
+    isItLuxFHENetwork.value = Number(chainId) === Number(fnxChainId);
   } catch (switchError: unknown) {
     console.error("Error switching networks:", switchError);
     if (switchError instanceof Error) {
       const errorDetails = (switchError as any).error; // Using any to access nested properties
 
       if (errorDetails && errorDetails.code === ERROR_CHAIN_DOES_NOT_EXIST) {
-        addFhenixChain();
+        addLuxFHEChain();
       }
     }
   }
@@ -348,7 +348,7 @@ async function setupMetaMaskListeners() {
     mmChainId.value = Number(chainId);
     // @ts-ignore
     provider = new ethers.BrowserProvider(window.ethereum);
-    isItFhenixNetwork.value = Number(chainId) === Number(fnxChainId);
+    isItLuxFHENetwork.value = Number(chainId) === Number(fnxChainId);
   });
 }
 

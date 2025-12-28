@@ -1,8 +1,8 @@
 # FHE Auction Demo UI
 
-This code is based on the [Fhenix Nuxt 3 template](https://github.com/FhenixProtocol/fhenix-nuxt3-template).
+This code is based on the [LuxFHE Nuxt 3 template](https://github.com/LuxFHEProtocol/luxfhe-nuxt3-template).
 
-It integrates the contracts that were compiled from [Fhenix hardhat template](https://github.com/FhenixProtocol/fhenix-hardhat-example).
+It integrates the contracts that were compiled from [LuxFHE hardhat template](https://github.com/LuxFHEProtocol/luxfhe-hardhat-example).
 
 ## Setup
 
@@ -19,8 +19,8 @@ To deploy:
 ```bash
 # from the base directory (not frontend)
 pnpm compile
-# start localfhenix (if you don't have it running already)
-pnpm localfhenix:start
+# start localluxfhe (if you don't have it running already)
+pnpm localluxfhe:start
 pnpm task:deploy 
 # this copies the contracts & deployment information to the frontend
 pnpm updateContracts 
