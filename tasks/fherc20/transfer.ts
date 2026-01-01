@@ -6,7 +6,7 @@ task("task:transfer")
   .addParam("amount", "Amount to transfer (plaintext number)", "1")
   .addOptionalParam("to", "Destination address")
   .setAction(async function (taskArguments: TaskArguments, hre) {
-    const { luxfhejs, ethers, deployments } = hre;
+    const { luxfhe, ethers, deployments } = hre;
     const [signer] = await ethers.getSigners();
 
     let signerAddress = await signer.getAddress();
@@ -22,7 +22,7 @@ task("task:transfer")
 
     const contract = await ethers.getContractAt("ExampleToken", fherc20.address);
 
-    const encryptedAmount = await luxfhejs.encrypt_uint32(amountToAdd);
+    const encryptedAmount = await luxfhe.encrypt_uint32(amountToAdd);
 
     let contractWithSigner = contract.connect(signer) as unknown as FHERC20;
 

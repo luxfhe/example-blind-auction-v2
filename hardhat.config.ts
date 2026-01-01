@@ -1,7 +1,8 @@
 // Plugins
 import "@nomicfoundation/hardhat-toolbox";
+import "@nomicfoundation/hardhat-foundry";
 import "@luxfhe/hardhat-plugin";
-import "@luxfhe/hardhat-docker";
+import "@luxfhe/hardhat-network";
 import "hardhat-deploy";
 import { HardhatUserConfig } from "hardhat/config";
 
@@ -9,8 +10,13 @@ import { HardhatUserConfig } from "hardhat/config";
 import "./tasks";
 
 const config: HardhatUserConfig = {
-  solidity: "0.8.20",
-  // Optional: defaultNetwork is already being set to "localluxfhe" by @luxfhe/hardhat-plugin
+  solidity: {
+    version: "0.8.31",
+    settings: {
+      evmVersion: "cancun",
+    },
+  },
+  // Optional: defaultNetwork is already being set to "localluxfhe" by @luxfhe/hardhat-network
   defaultNetwork: "localluxfhe",
 };
 

@@ -6,7 +6,7 @@ task("task:transferPublic")
   .addParam("amount", "Amount to transfer (plaintext number)", "1")
   .addOptionalParam("to", "Destination address")
   .setAction(async function (taskArguments: TaskArguments, hre) {
-    const { luxfhejs, ethers, deployments } = hre;
+    const { luxfhe, ethers, deployments } = hre;
     const [signer] = await ethers.getSigners();
 
     let signerAddress = await signer.getAddress();

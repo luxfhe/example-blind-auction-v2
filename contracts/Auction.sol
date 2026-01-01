@@ -2,8 +2,8 @@
 
 pragma solidity >=0.8.13 <0.9.0;
 
-import { Permissioned, Permission } from "@luxfhe/contracts/access/Permissioned.sol";
-import { inEuint32, euint32, FHE } from "@luxfhe/contracts/FHE.sol";
+import { Permissioned, Permission } from "@luxfi/contracts/fhe/access/Permissioned.sol";
+import { Euint32, euint32, FHE } from "@luxfi/contracts/fhe/FHE.sol";
 import { IFHERC20 } from "./IFHERC20.sol";
 import "./ConfAddress.sol";
 
@@ -82,16 +82,16 @@ contract Auction is Permissioned {
         }
 
         // Checking overflow here is optional as in real-life precision would be accounted for.
-        ebool hadOverflow = (eMaxEuint32 - currentBid).lt(auctionHistory[addr].amount);
+        ebool hadOverflow = FHE.lt(FHE.sub(eMaxEuint32, currentBid), auctionHistory[addr].amount);
         euint32 actualBid = FHE.select(hadOverflow, CONST_0_ENCRYPTED, currentBid);
 
         // Add the actual bid to the previous bid
         // If there was no bid it will work because the default value of uint32 is encrypted 02
-        auctionHistory[addr].amount = auctionHistory[addr].amount + actualBid;
+        auctionHistory[addr].amount = FHE.add(auctionHistory[addr].amount, actualBid);
         return auctionHistory[addr].amount;
     }
 
-    function bid(inEuint32 calldata amount)
+    function bid(Euint32 calldata amount)
     external
     auctionNotEnded
     {
@@ -111,19 +111,26 @@ contract Auction is Permissioned {
         highestBid = newHeighestBid;
     }
 
-    function getMyBidDebug (address account)
-    external
-    view
-    returns (uint256) {
-        return FHE.decrypt(auctionHistory[account].amount);
+    /// @notice Request decryption of a user's bid (must wait for result)
+    function requestMyBidDecrypt(address account) external {
+        FHE.decrypt(auctionHistory[account].amount);
     }
 
-    function getMyBid (address account, Permission memory auth)
+    /// @notice Get previously requested bid decryption result
+    function getMyBidDebug(address account)
+    external
+    view
+    returns (uint32) {
+        return FHE.reveal(auctionHistory[account].amount);
+    }
+
+    /// @notice Get previously requested bid decryption result (with permission)
+    function getMyBid(address account, Permission memory auth)
     external
     view
     onlyPermitted(auth, account)
-    returns (uint256) {
-        return FHE.decrypt(auctionHistory[account].amount);
+    returns (uint32) {
+        return FHE.reveal(auctionHistory[account].amount);
     }
 
     function getWinner()
@@ -134,12 +141,17 @@ contract Auction is Permissioned {
         return winnerAddress;
     }
 
+    /// @notice Request decryption of the winning bid
+    function requestWinningBidDecrypt() external auctionEnded {
+        FHE.decrypt(highestBid);
+    }
+
     function getWinningBid()
     external
     view
     auctionEnded
-    returns (uint256, address) {
-        return (FHE.decrypt(highestBid), winnerAddress);
+    returns (uint32, address) {
+        return (FHE.reveal(highestBid), winnerAddress);
     }
 
     function endAuction()
@@ -152,8 +164,12 @@ contract Auction is Permissioned {
         if (winnerAddress == address(0)) {
           winnerAddress = NO_BID_ADDRESS;
         }
+        // Request decrypt for the highest bid
+        FHE.decrypt(highestBid);
+        // Get the decrypted result (requires decrypt to have been processed)
+        uint32 winningBid = FHE.reveal(highestBid);
         // The cards can be revealed now, we can safely reveal the bidder
-        emit AuctionEnded(winnerAddress, FHE.decrypt(highestBid));
+        emit AuctionEnded(winnerAddress, winningBid);
     }
 
     // just for debugging purposes
@@ -166,8 +182,12 @@ contract Auction is Permissioned {
         if (winnerAddress == address(0)) {
           winnerAddress = NO_BID_ADDRESS;
         }
+        // Request decrypt for the highest bid
+        FHE.decrypt(highestBid);
+        // Get the decrypted result (requires decrypt to have been processed)
+        uint32 winningBid = FHE.reveal(highestBid);
         // The cards can be revealed now, we can safely reveal the bidder
-        emit AuctionEnded(winnerAddress, FHE.decrypt(highestBid));
+        emit AuctionEnded(winnerAddress, winningBid);
     }
 
     function redeemFunds()

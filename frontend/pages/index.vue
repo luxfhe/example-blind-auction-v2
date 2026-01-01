@@ -14,8 +14,8 @@
     <div style="display: flex; backdrop-filter: blur(7px); background-color: rgba(0,0,0,0.3); border-radius: 20px; padding: 10px; margin-bottom: 20px; filter: drop-shadow(1px 0 1px rgba(0,0,0,0.4));  ">
       <div>
         <div style="margin-bottom: 10px">
-          <BButton class="btn-sm connect-btn" style="" pill @click="fnxConnect" :disabled="isItFhenixNetwork">
-            {{ isItFhenixNetwork ? "Connected" : "Connect to Fhenix Network" }}
+          <BButton class="btn-sm connect-btn" style="" pill @click="fnxConnect" :disabled="isItLuxFHENetwork">
+            {{ isItLuxFHENetwork ? "Connected" : "Connect to LuxFHE Network" }}
           </BButton>
           <div style="display: flex; align-items: center; font-size: 12px">
             <div v-if="address !== ''">Account address: {{ ethAddressShortener(address) }}</div>
@@ -41,11 +41,11 @@
           </div>
           <BButton
             class="m-md-2 btn-xs"
-            v-if="isItFhenixNetwork"
+            v-if="isItLuxFHENetwork"
             pill
             variant="success"
             @click="mintEncryptedAndRefresh"
-            :disabled="!isItFhenixNetwork || minting"
+            :disabled="!isItLuxFHENetwork || minting"
           >
             {{ minting ? "Minting..." : "Mint 100 Tokens" }}
         </BButton>
@@ -97,7 +97,8 @@ import AuctionTable from "~/components/AuctionTable.vue";
 import AddProductModal from "~/components/AddProductModal.vue";
 import { type AuctionType, ethAddressShortener, copyToClipboard } from "~/utils/utils";
 
-const { address, fnxConnect, isItFhenixNetwork, getTokenBalance, tokenAddress, mintEncrypted, getAuctionWinner, getMyBid } = useChain();
+const { address, fnxConnect, isItLuxFHENetwork, getTokenBalance, tokenAddress, mintEncrypted, getAuctionWinner, getMyBid } = useChain();
+const isItLuxFHENetwork = isItLuxFHENetwork; // Compatibility alias
 const { getMyProducts, getTheirProducts, getAllProducts, clearDb } = useBackend();
 //const { dark, toggleTheme } = useThemeToggle();
 
@@ -110,7 +111,7 @@ useHead({
 });
 
 onMounted(async () => {
-  if (!isItFhenixNetwork.value) {
+  if (!isItLuxFHENetwork.value) {
     await fnxConnect();
     refreshTokenBalance();
     refreshProducts();

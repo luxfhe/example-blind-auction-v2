@@ -5,7 +5,7 @@ import { FHERC20 } from "../../typechain-types";
 task("task:bid")
   .addParam("amount", "Amount to transfer (plaintext number)", "1")
   .setAction(async function (taskArguments: TaskArguments, hre) {
-    const { luxfhejs, ethers, deployments } = hre;
+    const { luxfhe, ethers, deployments } = hre;
     const [signer] = await ethers.getSigners();
     let signerAddress = await signer.getAddress();
     const amountToBid = Number(taskArguments.amount);
@@ -22,7 +22,7 @@ task("task:bid")
       auction.address,
     );
 
-    const encryptedAmount = await luxfhejs.encrypt_uint32(amountToBid);
+    const encryptedAmount = await luxfhe.encrypt_uint32(amountToBid);
 
     let contractWithSigner = tokenContract.connect(
       signer,

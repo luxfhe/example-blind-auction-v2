@@ -6,7 +6,7 @@ task("task:getBalance").setAction(async function (
   _taskArguments: TaskArguments,
   hre,
 ) {
-  const { luxfhejs, ethers, deployments } = hre;
+  const { luxfhe, ethers, deployments } = hre;
   const [signer] = await ethers.getSigners();
 
   const erc20 = await deployments.get("ExampleToken");
@@ -18,7 +18,7 @@ task("task:getBalance").setAction(async function (
       erc20.address,
   )) as unknown as unknown as ExampleToken;
 
-  let permit = await luxfhejs.generatePermit(
+  let permit = await luxfhe.generatePermit(
       erc20.address,
     undefined, // use the internal provider
     signer,
@@ -28,7 +28,7 @@ task("task:getBalance").setAction(async function (
   const sealedResult = await contract.balanceOfEncrypted(address, permit);
   console.timeEnd("balanceOfEncrypted");
 
-  let unsealed = luxfhejs.unseal(erc20.address, sealedResult);
+  let unsealed = luxfhe.unseal(erc20.address, sealedResult);
 
   console.log(`got balance result: ${unsealed.toString()}`);
 });

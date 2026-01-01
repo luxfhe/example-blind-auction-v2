@@ -2,7 +2,7 @@ import { DeployFunction } from "hardhat-deploy/types";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
-  const { luxfhejs, ethers } = hre;
+  const { luxfhe, ethers } = hre;
   const { deploy } = hre.deployments;
   const [signer] = await ethers.getSigners();
 
@@ -11,11 +11,11 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
       (await ethers.provider.getBalance(signer.address)) <
       ethers.parseEther("1.0")
     ) {
-      await luxfhejs.getFunds(signer.address);
+      await luxfhe.getFunds(signer.address);
     }
   }
 
-  let encrypted_mint = await luxfhejs.encrypt(10000000);
+  let encrypted_mint = await luxfhe.encrypt(10000000);
 
   const token = await deploy("ExampleToken", {
     from: signer.address,

@@ -1,8 +1,8 @@
 import { ref } from "vue";
 import { ethers } from "ethers";
 
-import type { SupportedProvider } from "luxfhejs";
-import { LuxFHEClient, generatePermit, getPermit, getAllPermits } from "luxfhejs";
+import type { SupportedProvider } from "@luxfhe/sdk";
+import { LuxFHEClient, generatePermit, getPermit, getAllPermits } from "@luxfhe/sdk";
 
 import AuctionArtifact from "~/contracts/Auction.json";
 import ExampleToken from "~/contracts/FHERC20.json";
